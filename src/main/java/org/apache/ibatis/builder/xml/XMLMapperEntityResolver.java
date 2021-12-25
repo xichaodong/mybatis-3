@@ -29,6 +29,8 @@ import org.xml.sax.SAXException;
  *
  * @author Clinton Begin
  * @author Eduardo Macarron
+ * @comment chaodong.xi
+ * MyBatis自定义的EntityResolver实现类，用于加载本地的 mybatis-3-config.dtd 和 mybatis-3-mapper.dtd
  */
 public class XMLMapperEntityResolver implements EntityResolver {
 
@@ -43,14 +45,11 @@ public class XMLMapperEntityResolver implements EntityResolver {
   /**
    * Converts a public DTD into a local one.
    *
-   * @param publicId
-   *          The public id that is what comes after "PUBLIC"
-   * @param systemId
-   *          The system id that is what comes after the public id.
+   * @param publicId The public id that is what comes after "PUBLIC"
+   * @param systemId The system id that is what comes after the public id.
    * @return The InputSource for the DTD
-   *
-   * @throws org.xml.sax.SAXException
-   *           If anything goes wrong
+   * @throws org.xml.sax.SAXException If anything goes wrong
+   * @comment 从本地的mybatis包中加载dtd文件并转换成输入流
    */
   @Override
   public InputSource resolveEntity(String publicId, String systemId) throws SAXException {

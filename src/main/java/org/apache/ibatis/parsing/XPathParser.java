@@ -31,6 +31,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.ibatis.builder.BuilderException;
+import org.apache.ibatis.builder.xml.XMLMapperEntityResolver;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -43,13 +44,36 @@ import org.xml.sax.SAXParseException;
 /**
  * @author Clinton Begin
  * @author Kazuki Shimizu
+ * @comment chaodong.xi
+ * 用于解析Mybatis的配置文件和mapper.xml文件
+ * 主要方法
+ * @see #createDocument(InputSource) 用于将输入流转换成document
+ * @see #commonConstructor(boolean, Properties, EntityResolver) 用于在多个构造器中赋予一些公共属性
+ * @see #evalLong(Object, String)  类似的一系列方法，都是对Xpath从document中获取值进行了封装，具体使用方法可以查看XPathParserTest类的testEvalMethod方法
  */
 public class XPathParser {
-
+  /**
+   * xml文件从输入流转换成的document对象
+   */
   private final Document document;
+  /**
+   * 是否校验xml
+   */
   private boolean validation;
+  /**
+   * 因为校验时需要加载xml对应的dtd/xsd的解析器，一般为了防止弱网环境下从网络下载dtd/xsd文件失败会自定义solver从本地加载，这种写法在spring中也存在
+   * XMLMapperEntityResolver是MyBatis自定义EntityResolver实现类，用于从本地的mybatis包中加载的mybatis-3-config.dtd和mybatis-3-mapper.dtd
+   *
+   * @see XMLMapperEntityResolver
+   */
   private EntityResolver entityResolver;
+  /**
+   * 在外部文件中设置的变量，设置方式可以是java的properties文件，也可以在mybatis配置文件中指定
+   */
   private Properties variables;
+  /**
+   * 用于解析xml文件的解析器
+   */
   private XPath xpath;
 
   public XPathParser(String xml) {
@@ -227,9 +251,11 @@ public class XPathParser {
     }
   }
 
+  //根据xml文件的输入流解析成document对象，使用的是java自带的xml解析器
   private Document createDocument(InputSource inputSource) {
     // important: this must only be called AFTER common constructor
     try {
+      //1.构造DocumentBuilderFactory对象
       DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
       factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
       factory.setValidating(validation);
@@ -240,6 +266,7 @@ public class XPathParser {
       factory.setCoalescing(false);
       factory.setExpandEntityReferences(true);
 
+      //2.利用DocumentBuilderFactory获得DocumentBuilder
       DocumentBuilder builder = factory.newDocumentBuilder();
       builder.setEntityResolver(entityResolver);
       builder.setErrorHandler(new ErrorHandler() {
@@ -258,16 +285,19 @@ public class XPathParser {
           // NOP
         }
       });
+      //利用DocumentBuilder进行解析，将输入流转换成document
       return builder.parse(inputSource);
     } catch (Exception e) {
       throw new BuilderException("Error creating document instance.  Cause: " + e, e);
     }
   }
 
+  //公共构造方法
   private void commonConstructor(boolean validation, Properties variables, EntityResolver entityResolver) {
     this.validation = validation;
     this.entityResolver = entityResolver;
     this.variables = variables;
+    //构造新的XPath解析器
     XPathFactory factory = XPathFactory.newInstance();
     this.xpath = factory.newXPath();
   }
