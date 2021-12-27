@@ -20,6 +20,9 @@ import java.lang.reflect.Method;
 
 import org.apache.ibatis.reflection.ReflectionException;
 
+/**
+ * 之前没有解决掉冲突的get和set方法对应的invoker
+ */
 public class AmbiguousMethodInvoker extends MethodInvoker {
   private final String exceptionMessage;
 
@@ -30,6 +33,7 @@ public class AmbiguousMethodInvoker extends MethodInvoker {
 
   @Override
   public Object invoke(Object target, Object[] args) throws IllegalAccessException, InvocationTargetException {
+    //只要调用就会抛异常
     throw new ReflectionException(exceptionMessage);
   }
 }

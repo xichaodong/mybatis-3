@@ -22,6 +22,8 @@ import org.apache.ibatis.reflection.Reflector;
 
 /**
  * @author Clinton Begin
+ * @comment chaodong.xi
+ * 通过反射调用方法
  */
 public class MethodInvoker implements Invoker {
 
@@ -31,9 +33,11 @@ public class MethodInvoker implements Invoker {
   public MethodInvoker(Method method) {
     this.method = method;
 
+    //如果参数列表长度为1的话为set方法，所以设置type为参数类型
     if (method.getParameterTypes().length == 1) {
       type = method.getParameterTypes()[0];
     } else {
+      //反之则为get方法，这时候设置type为返回值类型
       type = method.getReturnType();
     }
   }
@@ -41,6 +45,7 @@ public class MethodInvoker implements Invoker {
   @Override
   public Object invoke(Object target, Object[] args) throws IllegalAccessException, InvocationTargetException {
     try {
+      //使用参数args调用target对象的method方法
       return method.invoke(target, args);
     } catch (IllegalAccessException e) {
       if (Reflector.canControlMemberAccessible()) {

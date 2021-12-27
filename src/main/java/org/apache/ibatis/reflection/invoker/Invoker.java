@@ -21,7 +21,9 @@ import java.lang.reflect.InvocationTargetException;
  * @author Clinton Begin
  */
 public interface Invoker {
+  //执行动作
   Object invoke(Object target, Object[] args) throws IllegalAccessException, InvocationTargetException;
 
+  //获取invoker对象的类型
   Class<?> getType();
 }

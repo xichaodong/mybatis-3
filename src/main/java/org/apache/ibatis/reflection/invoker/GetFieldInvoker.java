@@ -21,6 +21,8 @@ import org.apache.ibatis.reflection.Reflector;
 
 /**
  * @author Clinton Begin
+ * @comment chaodong.xi
+ * 通过反射获取对应字段的值
  */
 public class GetFieldInvoker implements Invoker {
   private final Field field;
@@ -32,6 +34,7 @@ public class GetFieldInvoker implements Invoker {
   @Override
   public Object invoke(Object target, Object[] args) throws IllegalAccessException {
     try {
+      //获取target字段的值
       return field.get(target);
     } catch (IllegalAccessException e) {
       if (Reflector.canControlMemberAccessible()) {
@@ -43,6 +46,7 @@ public class GetFieldInvoker implements Invoker {
     }
   }
 
+  //获取属性的类型
   @Override
   public Class<?> getType() {
     return field.getType();

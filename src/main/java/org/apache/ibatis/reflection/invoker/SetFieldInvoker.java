@@ -21,6 +21,8 @@ import org.apache.ibatis.reflection.Reflector;
 
 /**
  * @author Clinton Begin
+ * @comment chaodong.xi
+ * 通过反射设置对应字段的值
  */
 public class SetFieldInvoker implements Invoker {
   private final Field field;
@@ -32,6 +34,7 @@ public class SetFieldInvoker implements Invoker {
   @Override
   public Object invoke(Object target, Object[] args) throws IllegalAccessException {
     try {
+      //将target对象的field属性的值设置为args[0]
       field.set(target, args[0]);
     } catch (IllegalAccessException e) {
       if (Reflector.canControlMemberAccessible()) {
